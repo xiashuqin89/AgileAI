@@ -11,6 +11,4 @@ RUN rm -f /etc/localtime \
 && ln -sv /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
 && echo "Asia/Shanghai" > /etc/timezone
 
-RUN mkdir -p ~/.streamlit/ && touch ~/.streamlit/config.toml && echo '[theme]\nprimaryColor="#3A84FF"' > ~/.streamlit/config.toml
-
-ENTRYPOINT ["streamlit", "run", "app.py", "--server.port=8081", "--server.address=0.0.0.0", "--server.enableCORS=false", "--server.enableXsrfProtection=false"]
+ENTRYPOINT [" uvicorn", "main:app", "--reload"]
