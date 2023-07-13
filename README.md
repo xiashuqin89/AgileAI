@@ -1,3 +1,3 @@
 # AgileAI
 
-FastApi: https://fastapi.tiangolo.com/zh/tutorial/first-steps/]
+FastApi: https://fastapi.tiangolo.com/zh/tutorial/first-steps/
