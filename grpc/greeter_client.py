@@ -7,6 +7,7 @@ import helloworld_pb2
 import helloworld_pb2_grpc
 
 import _credentials
+import _consul
 
 _LOGGER = logging.getLogger(__name__)
 _LOGGER.setLevel(logging.INFO)
@@ -58,7 +59,7 @@ def send_rpc():
         unary_call(helloworld_pb2_grpc.GreeterStub(channel), 1, 'you')
 
 
-def send_rpc_with_auth():
+def send_rpc_with_auth(address, port):
     call_credentials = grpc.metadata_call_credentials(AuthGateway(),
                                                       name='auth gateway')
     channel_credential = grpc.ssl_channel_credentials(_credentials.ROOT_CERTIFICATE)
@@ -66,7 +67,7 @@ def send_rpc_with_auth():
         channel_credential,
         call_credentials,
     )
-    with grpc.secure_channel('localhost:50051', composite_credentials) as channel:
+    with grpc.secure_channel(f'{address}:{port}', composite_credentials) as channel:
         stub = helloworld_pb2_grpc.GreeterStub(channel)
         request = helloworld_pb2.HelloRequest(name='you')
         try:
@@ -81,7 +82,8 @@ def send_rpc_with_auth():
 
 
 def run():
-    send_rpc_with_auth()
+    address, port = _consul.get_service('hello')
+    send_rpc_with_auth(address, port)
 
 
 if __name__ == '__main__':

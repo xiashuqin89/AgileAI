@@ -1,11 +1,13 @@
 from concurrent import futures
 import logging
+import signal
 
 import grpc
 import helloworld_pb2
 import helloworld_pb2_grpc
 
 import _credentials
+import _consul
 
 _LOGGER = logging.getLogger(__name__)
 _LOGGER.setLevel(logging.INFO)
@@ -66,8 +68,14 @@ class Greeter(helloworld_pb2_grpc.GreeterServicer):
         return helloworld_pb2.HelloReply(message=f'Hello again, {request.name}!')
 
 
+def stop_serve(signum, frame):
+    print("process killed ！！！！")
+    _consul.unregister(service_id='hello-localhost-50051')
+    raise KeyboardInterrupt
+
+
 def serve():
-    port = '50051'
+    port = 50051
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10),
                          interceptors=(SignatureValidationInterceptor(),))
     helloworld_pb2_grpc.add_GreeterServicer_to_server(Greeter(), server)
@@ -76,9 +84,11 @@ def serve():
         _credentials.SERVER_CERTIFICATE,
     ),))
     # server.add_insecure_port('[::]:' + port)
-    server.add_secure_port('[::]:' + port, server_credentials)
+    server.add_secure_port(f'[::]:{port}', server_credentials)
+    _consul.register('hello', 'localhost', port)
     server.start()
-    print("Server started, listening on " + port)
+    signal.signal(signal.SIGINT, stop_serve)
+    print(f"Server started, listening on {port}")
     server.wait_for_termination()
 
 
