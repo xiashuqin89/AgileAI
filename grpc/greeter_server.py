@@ -29,12 +29,40 @@ class SignatureValidationInterceptor(grpc.ServerInterceptor):
             return self._abortion
 
 
+def _unary_unary_rpc_terminator(code, details):
+    def terminate(ignored_request, context):
+        context.abort(code, details)
+    return grpc.unary_unary_rpc_method_handler(terminate)
+
+
+class RequestHeaderValidatorInterceptor(grpc.ServerInterceptor):
+    def __init__(self, header, value, code, details):
+        self._header = header
+        self._value = value
+        self._terminator = _unary_unary_rpc_terminator(code, details)
+
+    def intercept_service(self, continuation, handler_call_details):
+        if (self._header,
+                self._value) in handler_call_details.invocation_metadata:
+            return continuation(handler_call_details)
+        else:
+            return self._terminator
+
+
 class Greeter(helloworld_pb2_grpc.GreeterServicer):
 
     def SayHello(self, request, context):
         return helloworld_pb2.HelloReply(message='Hello, %s!' % request.name)
 
     def SayHelloAgain(self, request, context):
+        # metadata
+        for key, value in context.invocation_metadata():
+            print('Received initial metadata: key=%s value=%s' % (key, value))
+
+        context.set_trailing_metadata((
+            ('checksum-bin', b'I agree'),
+            ('retry', 'false'),
+        ))
         return helloworld_pb2.HelloReply(message=f'Hello again, {request.name}!')
 
 

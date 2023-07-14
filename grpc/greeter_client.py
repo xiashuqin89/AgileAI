@@ -38,15 +38,24 @@ class AuthGateway(grpc.AuthMetadataPlugin):
         callback(((_SIGNATURE_HEADER_KEY, signature),), None)
 
 
+def unary_call(stub: helloworld_pb2_grpc.GreeterStub, request_id: int,
+               message: str):
+    print("call:", request_id)
+    try:
+        response = stub.SayHello(helloworld_pb2.HelloRequest(name=message),
+                                 timeout=3)
+        print(f"Greeter client received: {response.message}")
+    except grpc.RpcError as rpc_error:
+        print(f"Call failed with code: {rpc_error.code()}")
+
+
 def send_rpc():
     # NOTE(gRPC Python Team): .close() is possible on a channel and should be
     # used in circumstances in which the with statement does not fit the needs
     # of the code.
     print("Will try to greet world ...")
     with grpc.insecure_channel('localhost:50051') as channel:
-        stub = helloworld_pb2_grpc.GreeterStub(channel)
-        response = stub.SayHello(helloworld_pb2.HelloRequest(name='you'))
-    print("Greeter client received: " + response.message)
+        unary_call(helloworld_pb2_grpc.GreeterStub(channel), 1, 'you')
 
 
 def send_rpc_with_auth():
