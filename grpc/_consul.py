@@ -26,15 +26,6 @@ def unregister(service_id):
         print(f"GRPC注销服务{service_id}失败")
 
 
-def get_open_port():
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind(("", 0))
-    s.listen(1)
-    port = s.getsockname()[1]
-    s.close()
-    return port
-
-
 def get_service(server_name):
     c = consul.Consul(host='127.0.0.1', port=8500)
     _, nodes = c.health.service(service=server_name)
