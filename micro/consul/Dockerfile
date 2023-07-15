@@ -1,4 +1,4 @@
-FROM hub.docker.com/r/hashicorp/consul:1.15.4
+FROM hashicorp/consul:1.15.4
 
 WORKDIR /app
 
@@ -18,7 +18,6 @@ ENTRYPOINT [
     "-ui",
     "-node=1",
     "-client=0.0.0.0",
-    "--name=consul",
     "-data-dir=/consul/data",
     "-config-dir=/consul/config"
 ]
