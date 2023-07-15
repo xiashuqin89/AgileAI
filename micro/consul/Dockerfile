@@ -1,14 +1,23 @@
-FROM python:3.10.10
+FROM consul:1.15.4
 
 WORKDIR /app
 
-COPY requirements.txt ./
-RUN pip install -r requirements.txt
-
 COPY . .
+
+RUN ls -l
 
 RUN rm -f /etc/localtime \
 && ln -sv /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
 && echo "Asia/Shanghai" > /etc/timezone
 
-ENTRYPOINT ["python", " greeter_server.py"]
+ENTRYPOINT [
+    "consul",
+    "agent",
+    "-server",
+    "-bootstrap",
+    "-ui",
+    "-node=1",
+    "-client=0.0.0.0",
+    "--restart=always",
+    "--name=consul"
+]
