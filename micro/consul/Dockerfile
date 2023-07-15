@@ -18,6 +18,7 @@ ENTRYPOINT [
     "-ui",
     "-node=1",
     "-client=0.0.0.0",
-    "--restart=always",
-    "--name=consul"
+    "--name=consul",
+    "-data-dir=/consul/data",
+    "-config-dir=/consul/config"
 ]
