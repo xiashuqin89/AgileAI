@@ -1,10 +1,12 @@
-FROM hashicorp/consul:1.15.4
+FROM centos:centos7
 
 WORKDIR /app
 
 COPY . .
 
-RUN ls -l
+RUN sudo yum install -y yum-utils
+RUN sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+RUN sudo yum -y install consul
 
 RUN rm -f /etc/localtime \
 && ln -sv /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
