@@ -1,4 +1,4 @@
-FROM consul:1.15.4
+FROM hub.docker.com/r/hashicorp/consul:1.15.4
 
 WORKDIR /app
 
