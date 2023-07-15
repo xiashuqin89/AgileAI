@@ -11,4 +11,4 @@ RUN rm -f /etc/localtime \
 && ln -sv /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
 && echo "Asia/Shanghai" > /etc/timezone
 
-ENTRYPOINT ["python", " greeter_server.py"]
+ENTRYPOINT ["python", "greeter_server.py"]
