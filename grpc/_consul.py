@@ -2,7 +2,6 @@ import os
 
 import consul
 
-
 CONSUL_HOST = os.getenv('CONSUL_HOST', '127.0.0.1')
 CONSUL_PORT = int(os.getenv('CONSUL_PORT', 8500))
 
