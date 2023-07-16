@@ -1,18 +1,3 @@
-#FROM tencentos/tencentos_server24_mini:latest
-#
-#WORKDIR /app
-#
-#COPY . .
-#
-#RUN yum install -y yum-utils
-#RUN yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
-#RUN yum -y install consul
-#
-#RUN rm -f /etc/localtime \
-#&& ln -sv /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
-#&& echo "Asia/Shanghai" > /etc/timezone
-
-
 FROM hashicorp/consul:latest
 WORKDIR /app
 RUN cd /app
