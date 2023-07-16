@@ -13,6 +13,6 @@
 #&& echo "Asia/Shanghai" > /etc/timezone
 
 
-FROM consul:latest
+FROM hashicorp/consul:latest
 
 CMD ["consul agent -data-dir=/consul/data -config-dir=/consul/config -server -bootstrap -ui -node=1 -client=0.0.0.0"]
