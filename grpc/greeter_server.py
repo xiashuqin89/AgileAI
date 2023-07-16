@@ -1,4 +1,5 @@
 from concurrent import futures
+import os
 import logging
 import signal
 
@@ -14,6 +15,9 @@ _LOGGER.setLevel(logging.INFO)
 
 _LISTEN_ADDRESS_TEMPLATE = 'localhost:%d'
 _SIGNATURE_HEADER_KEY = 'x-signature'
+
+REGISTER_HOST = os.getenv('REGISTER_HOST', '127.0.0.1')
+REGISTER_PORT = int(os.getenv('REGISTER_PORT'), 50051)
 
 
 class SignatureValidationInterceptor(grpc.ServerInterceptor):
@@ -75,7 +79,6 @@ def stop_serve(signum, frame):
 
 
 def serve():
-    port = 50051
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10),
                          interceptors=(SignatureValidationInterceptor(),))
     helloworld_pb2_grpc.add_GreeterServicer_to_server(Greeter(), server)
@@ -83,12 +86,12 @@ def serve():
         _credentials.SERVER_CERTIFICATE_KEY,
         _credentials.SERVER_CERTIFICATE,
     ),))
-    # server.add_insecure_port('[::]:' + port)
-    server.add_secure_port(f'[::]:{port}', server_credentials)
-    _consul.register('hello', 'localhost', port)
+    # server.add_insecure_port('[::]:' + REGISTER_PORT)
+    server.add_secure_port(f'[::]:{REGISTER_PORT}', server_credentials)
+    _consul.register('hello', REGISTER_HOST, REGISTER_PORT)
     server.start()
     signal.signal(signal.SIGINT, stop_serve)
-    print(f"Server started, listening on {port}")
+    print(f"Server started, listening on {REGISTER_PORT}")
     server.wait_for_termination()
 
 

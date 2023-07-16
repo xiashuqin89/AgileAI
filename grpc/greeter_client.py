@@ -50,12 +50,12 @@ def unary_call(stub: helloworld_pb2_grpc.GreeterStub, request_id: int,
         print(f"Call failed with code: {rpc_error.code()}")
 
 
-def send_rpc():
+def send_rpc(address, port):
     # NOTE(gRPC Python Team): .close() is possible on a channel and should be
     # used in circumstances in which the with statement does not fit the needs
     # of the code.
     print("Will try to greet world ...")
-    with grpc.insecure_channel('localhost:50051') as channel:
+    with grpc.insecure_channel(f'{address}:{port}') as channel:
         unary_call(helloworld_pb2_grpc.GreeterStub(channel), 1, 'you')
 
 
